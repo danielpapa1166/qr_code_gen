@@ -13,12 +13,16 @@ QrFixPattern::QrFixPattern(int xpos, int ypos, std::vector<std::vector<QrModuleT
 void QrFixPattern::apply_fix_pattern(std::vector<std::vector<QrModuleType_t>>& matrix) const {
   for (std::size_t row = 0; row < pattern.size(); ++row) {
     for (std::size_t col = 0; col < pattern[row].size(); ++col) {
-      if(ypos + row >= matrix.size() || xpos + col >= matrix[row].size()
-         || ypos + row < 0 || xpos + col < 0) {
-        continue; // skip if the position is out of bounds
+      const int target_y = ypos + static_cast<int>(row);
+      const int target_x = xpos + static_cast<int>(col);
+
+      if (target_y < 0 || target_x < 0 ||
+          target_y >= static_cast<int>(matrix.size()) ||
+          target_x >= static_cast<int>(matrix[target_y].size())) {
+        continue;
       }
-      matrix[ypos + row][xpos + col].color = pattern[row][col].color;
-      matrix[ypos + row][xpos + col].reserved = QRMODULE_RESERVED;
+
+      matrix[target_y][target_x] = pattern[row][col];
     }
   }
 

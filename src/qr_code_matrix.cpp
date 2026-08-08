@@ -1,76 +1,10 @@
 #include "qr_code_gen/qr_code_matrix.hpp"
 #include "qr_code_fix_pattern.hpp"
+#include "qr_code_pattern_config.hpp"
 #include <cstdio>
 #include <vector>
 
 namespace qr_code_gen {
-
-using Pattern = std::vector<std::vector<QrModuleType_t>>;
-
-constexpr QrModuleType_t black{
-  QRMODULE_BLACK,
-  QRMODULE_RESERVED
-};
-
-constexpr QrModuleType_t white{
-  QRMODULE_WHITE,
-  QRMODULE_RESERVED
-};
-
-const Pattern finder_pattern{
-  {white, white, white, white, white, white, white, white, white},
-  {white, black, black, black, black, black, black, black, white},
-  {white, black, white, white, white, white, white, black, white},
-  {white, black, white, black, black, black, white, black, white},
-  {white, black, white, black, black, black, white, black, white},
-  {white, black, white, black, black, black, white, black, white},
-  {white, black, white, white, white, white, white, black, white},
-  {white, black, black, black, black, black, black, black, white},
-  {white, white, white, white, white, white, white, white, white},
-};
-
-const Pattern alignment_pattern{
-  {black, black, black, black, black},
-  {black, white, white, white, black},
-  {black, white, black, white, black},
-  {black, white, white, white, black},
-  {black, black, black, black, black},
-};
-
-const Pattern timing_pattern_vertical{
-  {black}, 
-  {white}, 
-  {black}, 
-  {white}, 
-  {black}, 
-  {white}, 
-  {black}, 
-  {white}, 
-  {black}, 
-  {white}, 
-  {black}, 
-  {white}, 
-  {black}
-};
-
-const Pattern timing_pattern_horizontal{
-    {
-        black, 
-        white, 
-        black, 
-        white, 
-        black, 
-        white, 
-        black, 
-        white, 
-        black, 
-        white, 
-        black, 
-        white, 
-        black
-    }
-};
-
 
 // this file contains the functionalities to
 // generate a QR code matrix from encoded data
@@ -95,7 +29,7 @@ QrMatrix::QrMatrix(const std::vector<uint8_t> & data_buffer) {
   QrFixPattern top_right(21, -1, finder_pattern);
   top_right.apply_fix_pattern(matrix);
 
-  QrFixPattern bottom_left(0, 21, finder_pattern);
+  QrFixPattern bottom_left(-1, 21, finder_pattern);
   bottom_left.apply_fix_pattern(matrix);
 
   QrFixPattern alignment(20, 20, alignment_pattern);
@@ -115,7 +49,7 @@ QrMatrix::QrMatrix(const std::vector<uint8_t> & data_buffer) {
       right--;
     }
 
-    for (int offset = 0; offset < 29; ++offset) {
+    for (int offset = 0; offset < 29; offset++) {
       const int row = upwards ? 28 - offset : offset;
 
       for (int column = right; column >= right - 1; --column) {
@@ -125,7 +59,9 @@ QrMatrix::QrMatrix(const std::vector<uint8_t> & data_buffer) {
 
         const bool bit = data_buffer[bit_index / 8] & (1 << (7 - (bit_index % 8)));
         bit_index++;
-        matrix[row][column].color = QRMODULE_WHITE;
+        printf("Setting module at (%d, %d) to %s, bit index %d\n", 
+            row, column, bit ? "black" : "white", bit_index - 1);
+        matrix[row][column].color = bit ? QRMODULE_BLACK : QRMODULE_WHITE;
       }
     }
 
