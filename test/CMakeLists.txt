@@ -1,0 +1,2 @@
+add_executable(qr_code_gen_sanity main.cpp)
+target_link_libraries(qr_code_gen_sanity PRIVATE qr_code_gen::qr_code_gen)
