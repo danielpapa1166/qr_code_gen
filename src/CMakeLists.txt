@@ -1,4 +1,8 @@
-add_library(qr_code_gen qr_code_gen.cpp)
+add_library(qr_code_gen 
+    qr_code_encode.cpp
+    qr_code_matrix.cpp
+    qr_code_drawer.cpp
+)
 add_library(qr_code_gen::qr_code_gen ALIAS qr_code_gen)
 
 target_compile_features(qr_code_gen PUBLIC cxx_std_17)
