@@ -1,12 +1,9 @@
 #ifndef QR_CODE_GEN_QR_CODE_ENCODE_HPP
 #define QR_CODE_GEN_QR_CODE_ENCODE_HPP
 
-#include "qr_code_common_defs.hpp"
-
 #include <stdint.h>
 #include <string>
 #include <vector>
-#define MAX_DATA_LENGTH 100
 
 namespace qr_code_gen {
 

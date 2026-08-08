@@ -1,17 +1,18 @@
 #include "qr_code_gen/qr_code_encode.hpp"
-#include <stdint.h>
-#include <array>
 
-// this file contains the functionalities to 
-// encode a string to QR code data
+#include <cstddef>
+#include <stdexcept>
 
-static const uint8_t ENC = 0b0100; 
-static const uint8_t END = 0b0000;
-static const uint8_t PADDING_BYTES[] = {
-  0b11101100, 
-  0b00010001
+namespace {
+
+constexpr std::size_t max_payload_bytes = 42;
+constexpr std::size_t data_codeword_count = 44;
+constexpr uint8_t pad_codewords[] = {
+  0xEC,
+  0x11,
 };
 
+} // namespace
 
 namespace qr_code_gen {
 
@@ -19,52 +20,35 @@ static uint8_t gf_multiply(uint8_t a, uint8_t b);
 static std::vector<uint8_t> rs_calculate(const std::vector<uint8_t> & data_codewords);
 
 
-QrEncode::QrEncode(const std::string & data) {
-  // encode the data to QR code data
-
-  if(data.length() > MAX_DATA_LENGTH) {
-    return; 
+QrEncode::QrEncode(const std::string & data)
+{
+  if (data.size() > max_payload_bytes) {
+    throw std::invalid_argument("Version 3-M supports at most 42 payload bytes");
   }
 
-  std::vector<uint8_t> tmp_data_buffer;
+  data_buffer.reserve(data_codeword_count + 26);
+  data_buffer.push_back(static_cast<uint8_t>(0x40 | (data.size() >> 4)));
+  data_buffer.push_back(static_cast<uint8_t>(data.size() << 4));
 
-  tmp_data_buffer.resize(data.length() + 3);
-  tmp_data_buffer[0] = ENC;
-  tmp_data_buffer[1] = static_cast<uint8_t>(data.length());
-
-  for(size_t i = 0; i < data.length(); ++i) {
-    tmp_data_buffer[i + 2] = static_cast<uint8_t>(data[i]);
+  for (std::size_t index = 0; index < data.size(); ++index) {
+    const uint8_t current = static_cast<uint8_t>(data[index]);
+    const uint8_t next = index + 1 < data.size() ?
+        static_cast<uint8_t>(data[index + 1]) : 0;
+    data_buffer.back() |= current >> 4;
+    data_buffer.push_back(static_cast<uint8_t>(current << 4 | next >> 4));
   }
 
-  tmp_data_buffer[data.length() + 2] = END;
-
-  data_buffer.resize((tmp_data_buffer.size() + 1));
-
-  // rearrange: shift by one nibble: 
-  for(size_t i = 0; i < tmp_data_buffer.size(); i++) {
-    data_buffer[i] = (tmp_data_buffer[i] << 4) | (tmp_data_buffer[i + 1] >> 4);
+  if (data_buffer.size() > data_codeword_count) {
+    throw std::logic_error("QR payload exceeds Version 3-M data capacity");
   }
 
-  // cut trailing zeros
-  while(!data_buffer.empty() && data_buffer.back() == 0) {
-    data_buffer.pop_back();
+  while (data_buffer.size() < data_codeword_count) {
+    data_buffer.push_back(
+        pad_codewords[(data_buffer.size() - (data.size() + 2)) % 2]);
   }
-
-  // add padding bytes to reach the required length of 44 data codewords
-  const int paddig_byte_offset = data_buffer.size() % 2;
-  while(data_buffer.size() < 44) {
-    data_buffer.push_back(PADDING_BYTES[
-      (paddig_byte_offset + data_buffer.size()) % 2
-    ]);
-  }
-
 
   const auto rs_remainder = rs_calculate(data_buffer);
-
   data_buffer.insert(data_buffer.end(), rs_remainder.begin(), rs_remainder.end());
-
-
-
 }
 
 
