@@ -47,8 +47,8 @@ void QrDrawer::draw(
     }
 
     for (QrModuleType_t module : row) {
-      if (module != QRMODULE_UNSET && module != QRMODULE_WHITE &&
-          module != QRMODULE_BLACK) {
+      if (module.color != QRMODULE_UNSET && module.color != QRMODULE_WHITE &&
+          module.color != QRMODULE_BLACK) {
         throw std::invalid_argument("QR matrix contains an invalid module");
       }
     }
@@ -66,7 +66,7 @@ void QrDrawer::draw(
 
   for (std::size_t row = 0; row < matrix_size; ++row) {
     for (std::size_t column = 0; column < matrix_size; ++column) {
-      if (matrix[row][column] == QRMODULE_WHITE) {
+      if (matrix[row][column].color == QRMODULE_WHITE) {
         continue;
       }
 

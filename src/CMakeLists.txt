@@ -2,6 +2,7 @@ add_library(qr_code_gen
     qr_code_encode.cpp
     qr_code_matrix.cpp
     qr_code_drawer.cpp
+    qr_code_fix_pattern.cpp
 )
 add_library(qr_code_gen::qr_code_gen ALIAS qr_code_gen)
 
