@@ -6,10 +6,11 @@
 
 int main()
 {
-  qr_code_gen::QrEncode encoder("www.wikipedia.org");
+  qr_code_gen::QrEncode encoder("https://example.com");
   encoder.display_encoded_data_as_hex();
 
-  qr_code_gen::QrMatrix matrix(encoder.get_encoded_data());
+  auto encoded_data = encoder.get_encoded_data();
+  qr_code_gen::QrMatrix matrix(encoded_data);
   matrix.display_matrix();
 
   qr_code_gen::QrDrawer drawer({
@@ -17,8 +18,9 @@ int main()
     .foreground_color = 0x000000,
     .background_color = 0xFFFFFF
   });
-  drawer.draw(matrix.get_matrix());
-  
+  auto qr_matrix = matrix.get_matrix(); 
+  drawer.draw(qr_matrix);
+
 
   return 0;
 }
