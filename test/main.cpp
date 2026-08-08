@@ -4,14 +4,19 @@
 
 #include <iostream>
 
-int main()
-{
-  qr_code_gen::QrEncode encoder("https://example.com");
-  encoder.display_encoded_data_as_hex();
+// "WIFI:T:WPA;S:BKK-Display-Setup;;;"
+// "http://192.168.4.1:8080"
+
+int main(int argc, char* argv[]) {
+  if(argc != 2) {
+    printf("Usage: %s <data_to_encode>\n", argv[0]);
+    return 1;
+  }
+
+  qr_code_gen::QrEncode encoder(argv[1]);
 
   auto encoded_data = encoder.get_encoded_data();
   qr_code_gen::QrMatrix matrix(encoded_data);
-  matrix.display_matrix();
 
   qr_code_gen::QrDrawer drawer({
     .output_file_path = "qr_code.png",
