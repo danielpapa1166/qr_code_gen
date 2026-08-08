@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
   qr_code_gen::QrMatrix matrix(encoded_data);
 
   qr_code_gen::QrDrawer drawer({
-    .output_file_path = "qr_code.png",
+    .output_file_path = "doc/qr_code.png",
     .foreground_color = 0x000000,
     .background_color = 0xFFFFFF
   });
