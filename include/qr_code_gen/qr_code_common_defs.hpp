@@ -1,0 +1,10 @@
+#ifndef QR_CODE_GEN_QR_CODE_COMMON_DEFS_HPP
+#define QR_CODE_GEN_QR_CODE_COMMON_DEFS_HPP
+
+typedef enum QrModuleType {
+  QRMODULE_UNSET = 0,
+  QRMODULE_WHITE = 1,
+  QRMODULE_BLACK = 2,
+} QrModuleType_t;
+
+#endif // QR_CODE_GEN_QR_CODE_COMMON_DEFS_HPP

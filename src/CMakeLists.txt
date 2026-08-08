@@ -5,7 +5,10 @@ add_library(qr_code_gen
 )
 add_library(qr_code_gen::qr_code_gen ALIAS qr_code_gen)
 
+find_package(PNG REQUIRED)
+
 target_compile_features(qr_code_gen PUBLIC cxx_std_17)
+target_link_libraries(qr_code_gen PRIVATE PNG::PNG)
 
 target_include_directories(qr_code_gen
     PUBLIC

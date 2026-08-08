@@ -12,5 +12,13 @@ int main()
   qr_code_gen::QrMatrix matrix(encoder.get_encoded_data());
   matrix.display_matrix();
 
+  qr_code_gen::QrDrawer drawer({
+    .output_file_path = "qr_code.png",
+    .foreground_color = 0x000000,
+    .background_color = 0xFFFFFF
+  });
+  drawer.draw(matrix.get_matrix());
+  
+
   return 0;
 }

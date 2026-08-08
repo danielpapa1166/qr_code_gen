@@ -1,6 +1,8 @@
 #ifndef QR_CODE_GEN_QR_CODE_ENCODE_HPP
 #define QR_CODE_GEN_QR_CODE_ENCODE_HPP
 
+#include "qr_code_common_defs.hpp"
+
 #include <stdint.h>
 #include <string>
 #include <vector>
