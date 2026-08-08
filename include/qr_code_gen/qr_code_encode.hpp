@@ -11,7 +11,7 @@ namespace qr_code_gen {
 class QrEncode {
 public:
   QrEncode(const std::string &data);
-  std::string get_encoded_data() const;
+  const std::vector<uint8_t> & get_encoded_data() const;
   void display_encoded_data_as_hex() const;
 
 private:

@@ -51,8 +51,11 @@ QrEncode::QrEncode(const std::string & data) {
   }
 
   // add padding bytes to reach the required length of 44 data codewords
+  const int paddig_byte_offset = data_buffer.size() % 2;
   while(data_buffer.size() < 44) {
-    data_buffer.push_back(PADDING_BYTES[data_buffer.size() % 2]);
+    data_buffer.push_back(PADDING_BYTES[
+      (paddig_byte_offset + data_buffer.size()) % 2
+    ]);
   }
 
 
@@ -65,16 +68,16 @@ QrEncode::QrEncode(const std::string & data) {
 }
 
 
-std::string QrEncode::get_encoded_data() const {
+const std::vector<uint8_t> & QrEncode::get_encoded_data() const {
   // return the encoded data
-  return std::string(data_buffer.begin(), data_buffer.end());
+  return data_buffer;
 }
 
 void QrEncode::display_encoded_data_as_hex() const {
   for(size_t i = 0; i < data_buffer.size(); ++i) {
     printf("%02X ", data_buffer[i]);
   }
-  printf("\n");
+  printf("\nPrinted %zu bytes of encoded data\n", data_buffer.size());
 }
 
 

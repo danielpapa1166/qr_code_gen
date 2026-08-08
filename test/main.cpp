@@ -8,6 +8,9 @@ int main()
 {
   qr_code_gen::QrEncode encoder("www.wikipedia.org");
   encoder.display_encoded_data_as_hex();
-  printf("Encoded data: %s\n", encoder.get_encoded_data().c_str());
+
+  qr_code_gen::QrMatrix matrix(encoder.get_encoded_data());
+  matrix.display_matrix();
+
   return 0;
 }
