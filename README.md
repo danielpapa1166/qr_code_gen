@@ -15,29 +15,29 @@ reliability for these use cases.
 The encoder produces 44 byte-mode data codewords, adds 26 Reed-Solomon error
 correction codewords, and places the resulting 70 codewords plus seven remainder
 bits into a 29 x 29 Version 3 matrix. The matrix builder adds the fixed QR
-patterns, format information, and mask pattern 2. The drawer writes the matrix
-to a PNG using libpng with a four-module quiet zone.
+patterns, format information, and mask pattern 2. The generated matrix remains
+in memory for the integrating application to render.
 
 The implementation is in active development and generated codes should be
 verified with a QR reader before deployment.
 
 ## Build And Run
 
-Install CMake, a C++17 compiler, and libpng development headers. On Debian or
-Ubuntu:
+Install CMake and a C++17 compiler. On Debian or Ubuntu:
 
 ```bash
-sudo apt install cmake g++ libpng-dev
+sudo apt install cmake g++
 cmake -S . -B build
 cmake --build build
 ./build/test/qr_code_gen_sanity "https://example.com"
 ```
 
-The sanity application writes `qr_code.png` in the working directory.
+The sanity application generates and validates an in-memory QR matrix. Use
+`QrMatrix::get_matrix()` in an integrating application to render its modules.
 
 ## Yocto Integration
 
-Use CMake and declare libpng as a build dependency. A minimal recipe is:
+Use CMake. A minimal recipe is:
 
 ```bitbake
 SUMMARY = "Version 3-M QR code generator"
@@ -49,9 +49,12 @@ S = "${WORKDIR}/git"
 
 inherit cmake
 
-DEPENDS += "libpng"
 EXTRA_OECMAKE += "-DQR_CODE_GEN_BUILD_SANITY_APP=OFF"
 ```
+
+The library exposes the generated QR code as an in-memory matrix through
+`QrMatrix::get_matrix()`. The Yocto application can render those modules
+directly on its display without creating an image file.
 
 Add the resulting package to an image with:
 

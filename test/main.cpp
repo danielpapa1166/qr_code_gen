@@ -1,6 +1,5 @@
 #include "qr_code_gen/qr_code_encode.hpp"
 #include "qr_code_gen/qr_code_matrix.hpp"
-#include "qr_code_gen/qr_code_drawer.hpp"
 
 #include <exception>
 #include <iostream>
@@ -19,13 +18,12 @@ int main(int argc, char* argv[]) {
 
     auto encoded_data = encoder.get_encoded_data();
     qr_code_gen::QrMatrix matrix(encoded_data);
+    const auto matrix_data = matrix.get_matrix();
 
-    qr_code_gen::QrDrawer drawer({
-      .output_file_path = "doc/qr_code.png",
-      .foreground_color = 0xffffff,
-      .background_color = 0x340a41
-    });
-    drawer.draw(matrix.get_matrix());
+    if (matrix_data.empty() || matrix_data.size() != matrix_data.front().size()) {
+      std::cerr << "QR matrix is not square\n";
+      return 1;
+    }
   } catch (const std::exception& error) {
     std::cerr << "QR generation failed: " << error.what() << '\n';
     return 1;
